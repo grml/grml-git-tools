@@ -13,6 +13,7 @@ build: build-stamp
 
 build-stamp:
 	dh_testdir
+	cd docs && $(MAKE) && cd ..
 	touch $@
 
 clean: 
@@ -40,8 +41,7 @@ binary-indep: build install
 	dh_testroot
 	dh_installchangelogs 
 	dh_installdocs
-	dh_installexamples
-	dh_installman
+	dh_installman docs/git-last.1.gz
 	dh_link
 	dh_strip
 	dh_compress

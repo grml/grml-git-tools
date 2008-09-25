@@ -1,0 +1,36 @@
+git-last(1)
+===========
+
+Name
+----
+git-last - list early history of a git head
+
+Synopsis
+--------
+git-last [-h] [-l <number>] [-b] [-s]
+
+Options
+-------
+
+  -h | --help
+
+Show usage information.
+
+  -l <number> | --limit <number>
+
+Larger number results in longer output (default=20).
+
+  -b | --branch
+
+Use git-show-branch instead of normal output.
+
+  -s | --straight
+
+Only show first parents (not the merged stuff).
+
+Authors
+-------
+
+Author of git-last is Clifford Wolf <clifford@clifford.at>.
+
+This manpage was written by Michael Prokop <mika@grml.org>.
