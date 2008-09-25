@@ -1,3 +1,9 @@
+grml-git-tools (0.0.2) unstable; urgency=low
+
+  * Update git-wtf, thanks to William Morgan for fast update. :)
+
+ -- Michael Prokop <mika@grml.org>  Fri, 26 Sep 2008 01:48:34 +0200
+
 grml-git-tools (0.0.1) unstable; urgency=low
 
   * Initial release.

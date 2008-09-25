@@ -7,7 +7,7 @@ git-wtf - understand the current state of your git repository
 
 Synopsis
 --------
-git-last [<branch>]
+git-wtf [branch+] [-l|--long] [-a|--all] [--dump-config]
 
 Description
 -----------
@@ -19,6 +19,46 @@ aren't. For every branch, if it's a tracking branch, it tells you which commits
 need to be pulled and which need to be pushed.
 
 Use immediately after git fetch.
+
+git-wtf tries to ease the task of having many git branches. It's also useful
+for getting a summary of how tracking branches relate to a remote server.
+
+git-wtf shows you:
+
+- How your branch relates to the remote repo, if it's a tracking branch.
+- How your branch relates to non-feature ("version") branches, if it's a feature branch.
+- How your branch relates to the feature branches, if it's a version branch.
+
+For each of these relationships, git-wtf displays the commits pending on
+either side, if any. It displays checkboxes along the side for easy scanning
+of merged/non-merged branches.
+
+If you're working against a remote repo, git-wtf is best used between a 'git
+fetch' and a 'git merge' (or 'git pull' if you don't mind the redundant
+network access).
+
+Usage
+-----
+
+If [branch] is not specified, git-wtf will use the current branch.  With
+--long, you'll see author info and date for each commit. With --all, you'll
+see all commits, not just the first 5. With --dump-config, git-wtf will
+print out its current configuration in YAML format and exit.
+
+git-wtf uses some heuristics to determine which branches are version
+branches, and which are feature branches. (Specifically, it assumes the
+version branches are named "master", "next" and "edge".) If it guesses
+incorrectly, you will have to create a .git-wtfrc file.
+
+git-wtf looks for a .git-wtfrc file starting in the current directory, and
+recursively up to the root. The config file is a YAML file that specifies
+the version branches, any branches to ignore, and the max number of commits
+to display when --all isn't used. To start building a configuration file,
+run "git-wtf --dump-config > .git-wtfrc" and edit it.
+
+IMPORTANT NOTE: all local branches referenced in .git-wtfrc must be prefixed
+with heads/, e.g. "heads/master". Remote branches must be of the form
+remotes/<remote>/<branch>.
 
 Authors
 -------

@@ -1,20 +1,72 @@
 #!/usr/bin/env ruby
 
+## git-wtf: display the state of your repository in a readable and easy-to-scan
+## format.
+##
+## git-wtf tries to ease the task of having many git branches. It's also useful
+## for getting a summary of how tracking branches relate to a remote server.
+##
+## git-wtf shows you:
+## - How your branch relates to the remote repo, if it's a tracking branch.
+## - How your branch relates to non-feature ("version") branches, if it's a
+##   feature branch.
+## - How your branch relates to the feature branches, if it's a version branch.
+##
+## For each of these relationships, git-wtf displays the commits pending on
+## either side, if any. It displays checkboxes along the side for easy scanning
+## of merged/non-merged branches.
+##
+## If you're working against a remote repo, git-wtf is best used between a 'git
+## fetch' and a 'git merge' (or 'git pull' if you don't mind the redundant
+## network access).
+##
+## Usage: git wtf [branch+] [-l|--long] [-a|--all] [--dump-config]
+##
+## If [branch] is not specified, git-wtf will use the current branch.  With
+## --long, you'll see author info and date for each commit. With --all, you'll
+## see all commits, not just the first 5. With --dump-config, git-wtf will
+## print out its current configuration in YAML format and exit.
+##
+## git-wtf uses some heuristics to determine which branches are version
+## branches, and which are feature branches. (Specifically, it assumes the
+## version branches are named "master", "next" and "edge".) If it guesses
+## incorrectly, you will have to create a .git-wtfrc file.
+##
+## git-wtf looks for a .git-wtfrc file starting in the current directory, and
+## recursively up to the root. The config file is a YAML file that specifies
+## the version branches, any branches to ignore, and the max number of commits
+## to display when --all isn't used. To start building a configuration file,
+## run "git-wtf --dump-config > .git-wtfrc" and edit it.
+##
+## IMPORTANT NOTE: all local branches referenced in .git-wtfrc must be prefixed
+## with heads/, e.g. "heads/master". Remote branches must be of the form
+## remotes/<remote>/<branch>.
+##
+## git-wtf Copyright 2008 William Morgan <wmorgan-git-wt-add@masanjin.net>.
+## This program is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the Free
+## Software Foundation, either version 3 of the License, or (at your option)
+## any later version.
+##
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+## more details.
+##
+## You can find the GNU General Public License at: http://www.gnu.org/licenses/
+
+
 require 'yaml'
 CONFIG_FN = ".git-wtfrc"
 
 class Numeric; def pluralize s; "#{to_s} #{s}" + (self != 1 ? "s" : "") end end
 
-def die s
-  $stderr.puts "Error: #{s}"
-  exit(-1)
-end
-
 $long = ARGV.delete("--long") || ARGV.delete("-l")
 $all = ARGV.delete("--all") || ARGV.delete("-a")
+$dump_config = ARGV.delete("--dump-config")
 
 ## find config file
-$config = { "versions" => [], "ignore" => [], "max_commits" => 5 }.merge begin
+$config = { "versions" => %w(heads/master heads/next heads/edge), "ignore" => [], "max_commits" => 5 }.merge begin
   p = File.expand_path "."
   fn = while true
     fn = File.join p, CONFIG_FN
@@ -24,15 +76,12 @@ $config = { "versions" => [], "ignore" => [], "max_commits" => 5 }.merge begin
     p = pp
   end
 
-  if fn
-    YAML::load_file fn
-  else
-    #$stderr.puts "Warning: no config file found. Specify version branches by creating <project_root>/#{CONFIG_FN}"
-    remotes = `git config --get-regexp ^remote\\.`.split("\n")
-    die "I can't find your gits" if remotes.empty?
-    repo = remotes.first =~ /^remote\.(\S+?)\./ ? $1 : "origin"
-    { "versions" => %w(master next edge).map { |b| "#{repo}/#{b}" } }
-  end
+  (fn && YAML::load_file(fn)) || {} # YAML turns empty files into false
+end
+
+if $dump_config
+  puts $config.to_yaml
+  exit(0)
 end
 
 ## the set of commits in 'to' that aren't in 'from'.
@@ -92,18 +141,18 @@ def show b, all_branches
     end
   end
 
-  vbs, fbs = all_branches.partition { |name, br| $config["versions"].include? br[:remote_branch] }
-  if $config["versions"].include? b[:remote_branch]
+  vbs, fbs = all_branches.partition { |name, br| $config["versions"].include? br[:local_branch] }
+  if $config["versions"].include? b[:local_branch]
     puts "\nFeature branches:" unless fbs.empty?
     fbs.each do |name, br|
-      remote_ahead = commits_between b[:remote_branch], br[:local_branch]
+      remote_ahead = b[:remote_branch] ? commits_between(b[:remote_branch], br[:local_branch]) : []
       local_ahead = commits_between b[:local_branch], br[:local_branch]
       if local_ahead.empty? && remote_ahead.empty?
         puts "[x] #{br[:name]} is merged in"
-      elsif local_ahead.empty?
+      elsif local_ahead.empty? && b[:remote_branch]
         puts "(x) #{br[:name]} merged in (only locally)"
       else
-        behind = commits_between br[:local_branch], b[:remote_branch]
+        behind = commits_between br[:local_branch], b[:local_branch]
         puts "[ ] #{br[:name]} is NOT merged in (#{ahead_behind_string local_ahead, behind})"
         show_commits local_ahead
       end
@@ -159,7 +208,7 @@ targets = if ARGV.empty?
   [`git symbolic-ref HEAD`.chomp.sub(/^refs\/heads\//, "")]
 else
   ARGV
-end.map { |t| branches[t] or die "can't find branch #{t.inspect}" }
+end.map { |t| branches[t] or abort "Error: can't find branch #{t.inspect}." }
 
 targets.each { |t| show t, branches }
 
@@ -169,3 +218,6 @@ uncommitted = show_dirty &&  `git diff-index --cached HEAD` != ""
 puts if modified || uncommitted
 puts "NOTE: working directory contains modified files" if modified
 puts "NOTE: staging area contains staged but uncommitted files" if uncommitted
+
+# the end!
+
