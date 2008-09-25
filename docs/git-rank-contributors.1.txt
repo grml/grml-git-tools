@@ -1,0 +1,39 @@
+git-rank-contributors(1)
+========================
+
+Name
+----
+git-rank-contributors - rank all authors by patch size
+
+Synopsis
+--------
+git-rank-contributors [-v] [-o]
+
+Description
+-----------
+
+git-rank-contributors is a trivial script that paws through your logs and ranks
+all the contributors by the size of their diffs. As always, bigger is better!
+
+This is similar to git shortlog -s -n --no-merges, but counts diff size rather
+than number of commits.
+
+Options
+-------
+
+  -v
+
+Get the raw diff size.
+
+  -o
+
+Get high-tech email obfuscation.  Output with just -o may be suitable for piping
+into a CREDITS file. It probably will require some editing in case people submit
+from more than one email address, though.
+
+Authors
+-------
+
+Author of git-rank-contributors is William Morgan <wmorgan-git-wt-add@masanjin.net>.
+
+This manpage was written by Michael Prokop <mika@grml.org>.

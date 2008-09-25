@@ -1,0 +1,28 @@
+git-wtf(1)
+==========
+
+Name
+----
+git-wtf - understand the current state of your git repository
+
+Synopsis
+--------
+git-last [<branch>]
+
+Description
+-----------
+
+git-wtf is a tool for working with feature branches. If you're on a feature
+branch, it tells you which version branches it's merged into. If you're on a
+version branch, it tells you which feature branches are merged in and which
+aren't. For every branch, if it's a tracking branch, it tells you which commits
+need to be pulled and which need to be pushed.
+
+Use immediately after git fetch.
+
+Authors
+-------
+
+Author of git-wtf is William Morgan <wmorgan-git-wt-add@masanjin.net>.
+
+This manpage was written by Michael Prokop <mika@grml.org>.

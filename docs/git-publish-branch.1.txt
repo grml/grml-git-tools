@@ -1,0 +1,30 @@
+git-publish-branch(1)
+=====================
+
+Name
+----
+git-publish-branch - publish a branch to a remote repository
+
+Synopsis
+--------
+git-publish-branch <branch>
+
+Description
+-----------
+
+git-publish-branch is a simple script to ease the unnecessarily complex task of
+"publishing" a branch, i.e., taking a local branch, creating a reference to it
+on a remote repo, and setting up the local branch to track the remote one, all
+in one go.
+
+You give it a branch name, and that branch is published in your remote
+repository. That's it. If you use -d, it will delete the remote reference.
+
+Useful if you publish your topic branches to the outside world.
+
+Authors
+-------
+
+Author of git-publish-branch is William Morgan <wmorgan-git-wt-add@masanjin.net>.
+
+This manpage was written by Michael Prokop <mika@grml.org>.

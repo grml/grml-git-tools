@@ -8,7 +8,8 @@
 	sed -i 's/\.sp//' `echo $^ |sed -e 's/.txt//'`
 	gzip -f --best `echo $^ |sed -e 's/.txt//'`
 
-MANPAGES = git-last.1
+MANPAGES = git-last.1 git-publish-branch.1 git-rank-contributors.1 git-wtf.1
+
 
 all: doc
 
