@@ -16,16 +16,16 @@ build-stamp:
 	cd docs && $(MAKE) && cd ..
 	touch $@
 
-clean: 
+clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp
-	dh_clean 
+	dh_clean
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_clean -k
 	dh_installdirs /usr/bin
 
 	# Add here commands to install the package into debian/grml-git-tools.
@@ -39,9 +39,10 @@ binary-arch: build install
 binary-indep: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
+	dh_installchangelogs
 	dh_installdocs
-	dh_installman docs/git-last.1.gz
+	dh_installman docs/git-last.1.gz docs/git-publish-branch.1.gz \
+	   docs/git-rank-contributors.1.gz docs/git-wtf.1.gz
 	dh_link
 	dh_strip
 	dh_compress
