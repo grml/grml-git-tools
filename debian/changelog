@@ -1,6 +1,6 @@
-grml-git-tools (0.1-1) unstable; urgency=low
+grml-git-tools (0.0.1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release.
 
  -- Michael Prokop <mika@grml.org>  Thu, 25 Sep 2008 23:19:21 +0200
 

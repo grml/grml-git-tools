@@ -1,24 +1,25 @@
 This package was debianized by Michael Prokop <mika@grml.org> on
 Thu, 25 Sep 2008 23:19:21 +0200.
 
-It was downloaded from <url://example.com>
+It was downloaded from git://git.grml.org/grml-git-tools.git
 
-Upstream Author(s):
+Upstream Authors:
 
-    <put author's name and email here>
-    <likewise for another author>
+    William Morgan <wmorgan-git-wt-add@masanjin.net>
 
 Copyright:
 
-    <Copyright (C) YYYY Name OfAuthor>
-    <likewise for another author>
+    git-last:             Copyright (C) 2008 Clifford Wolf  <clifford@clifford.at>
+    git-publish-branch:   Copyright (C) 2008 William Morgan <wmorgan-git-wt-add@masanjin.net>
+    git-show-merges:      Copyright (C) 2008 William Morgan <wmorgan-git-wt-add@masanjin.net>
+    git-rank-contributors Copyright (C) 2008 William Morgan <wmorgan-git-wt-add@masanjin.net>
+    git-wt-add:           Copyright (C) 2007 William Morgan <wmorgan-git-wt-add@masanjin.net>
+    git-wtf:              Unknown right now, Mail sent to William Morgan.
 
 License:
 
-    <Put the license of the package here indented by 4 spaces>
+   All the scripts are available under the GNU General Public License, but
+   please check the header of the scripts itself for further information.
 
 The Debian packaging is (C) 2008, Michael Prokop <mika@grml.org> and
 is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
-
-# Please also look if there are files or directories which have a
-# different copyright/license attached and list them here.

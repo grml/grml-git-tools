@@ -1,0 +1,133 @@
+#!/bin/bash
+#
+#  git-last.sh - helper app for listing the early history of a git head
+#  Copyright (C) 2008  Clifford Wolf <clifford@clifford.at>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+
+SUBDIRECTORY_OK=Yes
+OPTIONS_SPEC="\
+git-last [options] [<rev>...]
+
+git-last lists the early history of a git head.
+--
+h,help      show the help
+l,limit=    larger number results in longer output (default=20)
+b,branch    use git-show-branch instead of normal output
+s,straight  only show first parents (not the merged stuff)
+"
+. git-sh-setup
+
+limit=20
+withmerges=true
+useshowbranch=false
+revlist=( )
+subjlist=( )
+revlist_idx=0
+revlist_n=0
+
+while (( $# > 0 )); do
+	if [ "$1" = "--" ]; then
+		shift; break
+	fi
+	if [ "$1" = "-l" ]; then
+		limit=$2
+		shift; shift; continue
+	fi
+	if [ "$1" = "-b" ]; then
+		useshowbranch=true
+		shift; continue
+	fi
+	if [ "$1" = "-s" ]; then
+		withmerges=false
+		shift; continue
+	fi
+	usage
+done
+
+for r; do
+	revlist=( "${revlist[@]}" "$r" )
+	(( revlist_n++ ))
+done
+
+if [ $revlist_n -eq 0 ]; then
+	revlist=( "${revlist[@]}" "HEAD" )
+	(( revlist_n++ ))
+fi
+
+show_branch_args=( "${revlist[@]}" )
+
+get_parents_num() {
+	q="'" qq="'\\\\''"
+	git-cat-file commit "$1" | awk '
+		BEGIN { c=0; subjectline=0; }
+		/^parent/ { c++; }
+		subjectline {
+			gsub(/'$q'/, "'$qq'");
+			print "s='$q'" $0 "'$q'";
+			nextfile;
+		}
+		/^$/ { subjectline=1; }
+		END { print "n=" c; }
+	'
+}
+
+nicerevname() {
+	echo "$1" | perl -pe 's:((\^1)+)(?![0-9]):"~".length($1)/2:eg;' # s:~1(?![0-9]):^:g;'
+}
+
+sortrevname() {
+	echo "$1" | perl -pe 's:((\^1)+)(?![0-9]):"~".length($1)/2:eg; s:([0-9]+):sprintf"%010d",$1:eg'
+}
+
+while (( $revlist_idx < $revlist_n )) && ( (( limit > 0 )) || ! $useshowbranch ); do
+	r="${revlist[$revlist_idx]}" n="" s=""
+	eval "$( get_parents_num "$r" )"
+	subjlist[$revlist_idx]="$s"
+	if (( n == 0 )); then
+		if $useshowbranch; then
+			revlist=( "${revlist[@]}" "$r" )
+			(( revlist_n++ ))
+			(( limit--))
+		fi
+	else
+		if (( limit > 0 )); then
+			for ((i=1; i <= n; i++)); do
+				if (( $i == 1 )) || $withmerges; then
+					revlist=( "${revlist[@]}" "$r^$i" )
+					(( revlist_n++ ))
+					(( limit--))
+				fi
+			done
+		fi
+	fi
+	(( revlist_idx++ ))
+done
+
+if $useshowbranch; then
+	git-show-branch "${show_branch_args[@]}" $(
+		for ((i=revlist_idx; i < revlist_n; i++)); do
+			s=$( sortrevname "${revlist[$i]}" )
+			r=$( nicerevname "${revlist[$i]}" )
+			printf "%s\t%s\n" "$s" "$r"
+		done | sort | cut -f2-
+	)
+else
+	maxrlen=0;
+	sortlist=( )
+	for ((i=0; i < revlist_n; i++)); do
+		sortlist[$i]="$( sortrevname "${revlist[$i]}" )"
+		revlist[$i]="$( nicerevname "${revlist[$i]}" )"
+		if (( maxrlen <= ${#revlist[$i]} )); then
+			maxrlen=${#revlist[$i]}
+		fi
+	done
+	for ((i=0; i < revlist_n; i++)); do
+		s="${sortlist[$i]}" r="${revlist[$i]}"
+		printf "%s\t%-*s %s\n" "$s" $maxrlen "$r" "${subjlist[$i]}"
+	done | sort | cut -f2-
+fi
+
