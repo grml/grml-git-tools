@@ -8,7 +8,8 @@ Homepage: http://git.grml.org/?p=grml-git-tools.git
 
 Package: grml-git-tools
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, ruby
+Depends: ${shlibs:Depends}, ${misc:Depends}, ruby, git-core
+Suggests: git-buildpackage, gitk, tig
 Description: Useful addons for work with git
  This package provides several standalone scripts
  which might be useful when working with git.
