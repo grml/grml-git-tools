@@ -1,0 +1,48 @@
+#!/bin/bash
+
+OPT_URL_=""  # gitweb project list to mirror
+
+PROGNAME_="$(basename $0)"
+
+usage()
+{
+    local msg_="$@"
+
+    echo "$msg_" >&2
+    cat <<EOT
+Usage: "$PROGNAME_" <gitweb url>
+EOT
+    exit 1
+}
+
+###
+## MAIN
+###
+
+while getopts "b:" opt; do
+    case "$opt" in
+        b) OPT_CLONE_URL_="$OPTARG" ;;
+        ?) usage "unknown option \"$OPTARG\"" ;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+OPT_URL_="$1"
+OPT_CLONE_URL_=""
+
+[ -z "$OPT_URL_" ]          && usage "need a url pointing to a gitweb installation"
+[ -z "$OPT_CLONE_URL_" ]    && OPT_CLONE_URL_="ssh://git@${OPT_URL_#*//}"
+
+curl -s "$OPT_URL_/?a=project_index" |while read i_; do
+    repo_="${i_%% *}"
+    repo_="${repo_%.git}"   # FIXME
+    if [ -d "$repo_" ]; then
+        # update
+        echo "updating: $repo_"
+        ( cd "$repo_" && git fetch )
+    else
+        # clone
+        git clone "$OPT_CLONE_URL_/${repo_}.git"
+    fi
+done
+
