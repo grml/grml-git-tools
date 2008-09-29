@@ -1,3 +1,5 @@
 docs/*.gz
 docs/*.html
 docs/*.xml
+debian/grml-git-tools*
+debian/files
