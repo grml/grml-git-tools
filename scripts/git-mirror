@@ -7,11 +7,8 @@ PROGNAME_="$(basename $0)"
 
 usage()
 {
-    local msg_="$@"
-
-    echo "$msg_" >&2
     cat <<EOT
-Usage: "$PROGNAME_" <gitweb url>
+Usage: "$PROGNAME_" [OPTIONS] <gitweb url>
 
 $PROGNAME_ tries to mirror all repositories from a gitweb instance
 
@@ -19,8 +16,16 @@ OPTIONS:
    -b         Base url for clone (default = ssh://git@<REPOSITORY>)
 
 EOT
+}
+
+die()
+{
+    local msg_="$@"
+    echo "Error: $msg_" >&2
+    usage
     exit 1
 }
+
 
 ###
 ## MAIN
@@ -29,14 +34,15 @@ EOT
 while getopts "b:" opt; do
     case "$opt" in
         b) OPT_CLONE_URL_="$OPTARG" ;;
-        ?) usage "unknown option \"$OPTARG\"" ;;
+        h) usage; exit 0 ;;
+        ?) die "unknown option \"$OPTARG\"" ;;
     esac
 done
 shift $(($OPTIND - 1))
 
 OPT_URL_="$1"
 
-[ -z "$OPT_URL_" ]          && usage "need a url pointing to a gitweb installation"
+[ -z "$OPT_URL_" ]          && die "need a url pointing to a gitweb installation"
 [ -z "$OPT_CLONE_URL_" ]    && OPT_CLONE_URL_="ssh://git@${OPT_URL_#*//}"
 
 curl -s "$OPT_URL_/?a=project_index" |while read i_; do

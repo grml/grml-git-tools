@@ -1,0 +1,28 @@
+git-mirror(1)
+=============
+
+
+NAME
+----
+git-mirror - tries to mirror all repositories from a gitweb instance
+
+
+SYNOPSIS
+--------
+git-mirror [OPTIONS] <gitweb url>
+
+
+OPTIONS
+-------
+*-h, help*::
+Show summary of options.
+
+*-b <base url> (default=ssh://git@<REPOSITORY>)*::
+Gives the base URL from which git-mirror fetches all repositories.
+
+
+AUTHORS
+-------
+Author of git-mirror is Michael Gebetsroither <gebi@grml.org>.
+
+This manpage was written by Michael Gebetsroither <gebi@grml.org>.
