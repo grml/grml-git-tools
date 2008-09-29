@@ -1,6 +1,7 @@
 #!/bin/bash
 
-OPT_URL_=""  # gitweb project list to mirror
+OPT_URL_=""         # gitweb project list to mirror
+OPT_CLONE_URL_=""   # base clone url to which the repo name is appended
 
 PROGNAME_="$(basename $0)"
 
@@ -11,6 +12,12 @@ usage()
     echo "$msg_" >&2
     cat <<EOT
 Usage: "$PROGNAME_" <gitweb url>
+
+$PROGNAME_ tries to mirror all repositories from a gitweb instance
+
+OPTIONS:
+   -b         Base url for clone (default = ssh://git@<REPOSITORY>)
+
 EOT
     exit 1
 }
@@ -28,7 +35,6 @@ done
 shift $(($OPTIND - 1))
 
 OPT_URL_="$1"
-OPT_CLONE_URL_=""
 
 [ -z "$OPT_URL_" ]          && usage "need a url pointing to a gitweb installation"
 [ -z "$OPT_CLONE_URL_" ]    && OPT_CLONE_URL_="ssh://git@${OPT_URL_#*//}"
