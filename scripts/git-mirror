@@ -2,6 +2,9 @@
 
 OPT_URL_=""         # gitweb project list to mirror
 OPT_CLONE_URL_=""   # base clone url to which the repo name is appended
+OPT_INCLUDE_=""      # ignore all repo matching this regexp
+OPT_VERBOSE_="false" # verbose output
+OPT_DRY_RUN_="false" # dry-run
 
 PROGNAME_="$(basename $0)"
 
@@ -13,7 +16,10 @@ Usage: "$PROGNAME_" [OPTIONS] <gitweb url>
 $PROGNAME_ tries to mirror all repositories from a gitweb instance
 
 OPTIONS:
-   -b         Base url for clone (default = ssh://git@<REPOSITORY>)
+   -b <url>     Base url for clone (default = ssh://git@<REPOSITORY>)
+   -m <regexp>  Include only repositories matching regexp
+   -v           Verbose
+   -n           Dry-run
 
 EOT
 }
@@ -26,14 +32,21 @@ die()
     exit 1
 }
 
+vprint()
+{
+    $OPT_VERBOSE_ && echo "$@"
+}
 
 ###
 ## MAIN
 ###
 
-while getopts "b:" opt; do
+while getopts "b:m:vn" opt; do
     case "$opt" in
         b) OPT_CLONE_URL_="$OPTARG" ;;
+        m) OPT_INCLUDE_="$OPTARG" ;;
+        v) OPT_VERBOSE_="true" ;;
+        n) OPT_DRY_RUN_="true" ;;
         h) usage; exit 0 ;;
         ?) die "unknown option \"$OPTARG\"" ;;
     esac
@@ -48,13 +61,23 @@ OPT_URL_="$1"
 curl -s "$OPT_URL_/?a=project_index" |while read i_; do
     repo_="${i_%% *}"
     repo_="${repo_%.git}"   # FIXME
+    repo_url_="$OPT_CLONE_URL_/${repo_}.git"
+
+    if [[ $OPT_INCLUDE_ != "" ]];then
+        if echo "$repo_" |grep -E -q -v "$OPT_INCLUDE_"; then
+            vprint "ignoring: $repo_url_"
+            continue
+        fi
+    fi
     if [ -d "$repo_" ]; then
         # update
         echo "updating: $repo_"
-        ( cd "$repo_" && git fetch )
+        $OPT_DRY_RUN_ || ( cd "$repo_" && git fetch )
     else
         # clone
-        git clone "$OPT_CLONE_URL_/${repo_}.git"
+        repo_url_="$OPT_CLONE_URL_/${repo_}.git"
+        vprint "cloning: $repo_url_"
+        $OPT_DRY_RUN_ || git clone "$repo_url_"
     fi
 done
 
