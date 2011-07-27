@@ -5,6 +5,8 @@ Maintainer: Michael Prokop <mika@grml.org>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.8.0
 Homepage: http://git.grml.org/?p=grml-git-tools.git
+Origin: Grml
+Bugs: mailto:bugs@grml.org
 
 Package: grml-git-tools
 Architecture: all
