@@ -3,7 +3,7 @@
 	asciidoc -b xhtml11 $^
 
 %.gz : %.txt ;
-	a2x -f manpage $^ 2>&1 |grep -v '^Note: ' >&2
+	a2x -f manpage $^ 2>&1
 	gzip -f --best $(patsubst %.txt,%, $^)
 
 MANPAGES = $(patsubst %.txt,%,$(wildcard *.txt))
