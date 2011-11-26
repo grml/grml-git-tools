@@ -1,3 +1,26 @@
+grml-git-tools (0.0.3) unstable; urgency=low
+
+  [ Michael Gebetsroither ]
+  * [f95a119] added git-mirror
+  * [ecc9a2c] git-mirror: add a optional clone url on the cmdline
+  * [5578699] git-mirror: added manpage
+  * [47309f2] added .gitignore for asciidoc tmp files
+  * [d2f0d39] add universal Makefile for asciidoc building
+  * [29ce3c3] add debian tmp files to .gitignore
+
+  [ Christian Hofstaedtler ]
+  * [447d6f9] Add debian/control headers Origin, Bugs
+
+  [ Michael Prokop ]
+  * [eca5178] Bump Standards-Version to 3.9.2
+  * [05972b2] Update git-wtf and git-rank-contributors to match upstream
+    versions
+  * [e937684] Update copyright information
+  * [1db2f29] Add asciidoc, xsltproc, docbook-xsl to Build-Depends-Indep
+  * [19f88a3] Makefile: drop grep -v call causing build error nowadays
+
+ -- Michael Prokop <mika@grml.org>  Sat, 26 Nov 2011 19:36:41 +0100
+
 grml-git-tools (0.0.2) unstable; urgency=low
 
   * Update git-wtf, thanks to William Morgan for fast update. :)
