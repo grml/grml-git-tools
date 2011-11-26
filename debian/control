@@ -2,7 +2,8 @@ Source: grml-git-tools
 Section: devel
 Priority: extra
 Maintainer: Michael Prokop <mika@grml.org>
-Build-Depends: debhelper (>= 7)
+Build-Depends: debhelper (>= 7), 
+Build-Depends-Indep: asciidoc, xsltproc, docbook-xsl
 Standards-Version: 3.9.2
 Homepage: http://git.grml.org/?p=grml-git-tools.git
 Origin: Grml
