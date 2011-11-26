@@ -3,7 +3,7 @@ Section: devel
 Priority: extra
 Maintainer: Michael Prokop <mika@grml.org>
 Build-Depends: debhelper (>= 7)
-Standards-Version: 3.8.0
+Standards-Version: 3.9.2
 Homepage: http://git.grml.org/?p=grml-git-tools.git
 Origin: Grml
 Bugs: mailto:bugs@grml.org
